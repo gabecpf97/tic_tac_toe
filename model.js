@@ -27,6 +27,10 @@ const Player = (name, mark) => {
     this.name = name;
     this.mark = mark;
 
+    const setName = (name) => {
+        this.name = name;
+    }
+
     const getName = () => {
         return name;
     }
@@ -35,11 +39,12 @@ const Player = (name, mark) => {
         return mark;
     }
 
-    return {getName, getMark};
+    return {getName, getMark, setName};
 }
 
 const gameBoard = (() => {
     const board = document.querySelector('.board');
+    let players = [];
     let currState = [];
     let gameStat = true;
     
@@ -51,6 +56,10 @@ const gameBoard = (() => {
         currState = _fillArray(n);
     };
 
+    function addPlayer(player) {
+        players.push(player);
+    }
+
     function clearAll() {
         for (let i = 0; i < currState.length; i++) {
             for (let j = 0; j < currState[i].length; j++) {
@@ -61,6 +70,7 @@ const gameBoard = (() => {
                 }
             }
         }
+        players = [];
         _render();
     }
 
@@ -73,8 +83,13 @@ const gameBoard = (() => {
                 || currState[0][2] == currState[1][2] && currState[0][2] == currState[2][2] && currState[0][2] != ""
                 || currState[0][0] == currState[1][1] && currState[1][1] == currState[2][2] && currState[0][0] != ""
                 || currState[0][2] == currState[1][1] && currState[1][1] == currState[2][0] && currState[0][2] != ""){
-            const showWinner = document.createElement('div');
-            showWinner.textContent = currState[i][j] + " wins";
+            const showWinner = document.createElement('h2');
+            let winner = "";
+            players.forEach(player => {
+                if (player.getMark() == currState[i][j])
+                    winner = player.getName();
+            });
+            showWinner.textContent = winner + " wins";
             document.querySelector('.container').appendChild(showWinner);
             gameStat = false;
         } 
@@ -144,15 +159,21 @@ const gameBoard = (() => {
         return arr;
     }
 
-    return {create, clearAll};
+    return {create, clearAll, addPlayer};
 })();
 
 (function() {
-    const first = Player('first', 'X');
-    const second = Player('second', 'O');
-    let moves = 0;    
+    let first = Player('X', 'X');
+    gameBoard.addPlayer(first);
+    let second = Player('O', 'O');
+    gameBoard.addPlayer(second);
     const squares = document.querySelectorAll('.square');
-    
+    const p1 = document.querySelector('.p1');
+    const p1_enter = document.querySelector('.p1_enter');
+    const p2 = document.querySelector('.p2');
+    const p2_enter = document.querySelector('.p2_enter');
+    let moves = 0;    
+
     squares.forEach(square => {
         square.addEventListener('click', () => {
              if (square.classList[2] == undefined) {
@@ -163,8 +184,19 @@ const gameBoard = (() => {
         });
     });
 
+    p1_enter.addEventListener('click', () => {
+        first.setName(p1.value);
+    });
+    p2_enter.addEventListener('click', () => {
+        second.setName(p2.value);
+    });
+
     document.querySelector('.new').addEventListener('click', () => {
         gameBoard.clearAll();
+        p1.value = "";
+        p2.value = "";
+        let container = document.querySelector('.container')
+        container.removeChild(container.lastChild);
         moves = 0;
     });
 
