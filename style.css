@@ -6,6 +6,14 @@ h1 {
     text-align: center;
 }
 
+label {
+    margin-left: 10px;
+}
+
+.player {
+    margin-left: 5px;
+}
+
 .butts {
     display: flex;
     justify-content: center;
@@ -14,6 +22,7 @@ h1 {
 
 .new {
     border-radius: 5px;
+    margin-left: 10px;
 }
 
 .container {
