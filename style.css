@@ -10,6 +10,16 @@ label {
     margin-left: 10px;
 }
 
+.showMark {
+    display: flex;
+    flex-direction: column;
+}
+
+.mark {
+    text-align: center;
+    margin-top: 5px;
+}
+
 .names {
     display: flex;
     justify-content: center;

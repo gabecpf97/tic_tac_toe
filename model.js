@@ -44,7 +44,7 @@ const Player = (name, mark) => {
 
 const gameBoard = (() => {
     const board = document.querySelector('.board');
-    let players = [];
+    let players = [Player('X', 'X'), Player('O', 'O')];
     let currState = [];
     let gameStat = true;
     
@@ -57,7 +57,11 @@ const gameBoard = (() => {
     };
 
     function addPlayer(player) {
-        players.push(player);
+        if (player.getMark() == 'X'){
+            players[0] = player;
+        } else {
+            players[1] = player;
+        }
     }
 
     function clearAll() {
@@ -70,7 +74,8 @@ const gameBoard = (() => {
                 }
             }
         }
-        players = [];
+        gameStat = true;
+        players = [Player('Player 1', 'X'), Player('Player 2', 'O')];
         _render();
     }
 
@@ -113,13 +118,14 @@ const gameBoard = (() => {
         let mark = info[2];
         currState[i][j] = mark;
         _render();
-        if (gameStat)
+        if (gameStat) {
             _checkWinner(i, j);
-        if (_checkDraw()){
-            const result = document.createElement('div');
-            result.textContent = "This round is draw";
-            document.querySelector('.container').appendChild(result);
-            gameStat = false;
+            if (_checkDraw()){
+                const result = document.createElement('div');
+                result.textContent = "This round is draw";
+                document.querySelector('.container').appendChild(result);
+                gameStat = false;
+            }
         }
     }
 
@@ -163,9 +169,9 @@ const gameBoard = (() => {
 })();
 
 (function() {
-    let first = Player('X', 'X');
+    let first = Player('Player 1', 'X');
     gameBoard.addPlayer(first);
-    let second = Player('O', 'O');
+    let second = Player('Player 2', 'O');
     gameBoard.addPlayer(second);
     const squares = document.querySelectorAll('.square');
     const p1 = document.querySelector('.p1');
@@ -173,6 +179,22 @@ const gameBoard = (() => {
     const p2 = document.querySelector('.p2');
     const p2_enter = document.querySelector('.p2_enter');
     let moves = 0;    
+
+    document.querySelector('.new').addEventListener('click', () => {
+        gameBoard.clearAll();
+        p1.value = "";
+        p2.value = "";
+        let container = document.querySelector('.container')
+        container.removeChild(container.lastChild);
+        moves = 0;
+    });
+
+    p1_enter.addEventListener('click', () => {
+        gameBoard.addPlayer(Player(p1.value, 'X'));
+    });
+    p2_enter.addEventListener('click', () => {
+        gameBoard.addPlayer(Player(p2.value, 'O'));
+    });
 
     squares.forEach(square => {
         square.addEventListener('click', () => {
@@ -184,29 +206,13 @@ const gameBoard = (() => {
         });
     });
 
-    p1_enter.addEventListener('click', () => {
-        first.setName(p1.value);
-    });
-    p2_enter.addEventListener('click', () => {
-        second.setName(p2.value);
-    });
-
-    document.querySelector('.new').addEventListener('click', () => {
-        gameBoard.clearAll();
-        p1.value = "";
-        p2.value = "";
-        let container = document.querySelector('.container')
-        container.removeChild(container.lastChild);
-        moves = 0;
-    });
-
     function _clickedIt(square) {
         if (moves % 2 == 0){
             moves++;
-            return second;
+            return first;
         } else {
             moves++;
-            return first;
+            return second;
         }
     }
 })();
